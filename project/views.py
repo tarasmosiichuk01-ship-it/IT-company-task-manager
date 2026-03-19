@@ -46,3 +46,32 @@ class PositionUpdateView(generic.UpdateView):
 class PositionDeleteView(generic.DeleteView):
     model = Position
     success_url = reverse_lazy("project:position-list")
+
+
+class TaskListView(generic.ListView):
+    model = Task
+    context_object_name = "task_list"
+    template_name = "project/task_list.html"
+    paginate_by = 5
+
+
+class TaskDetailView(generic.DetailView):
+    model = Task
+
+
+class TaskCreateView(generic.CreateView):
+    model = Task
+    fields = "__all__"
+    success_url = reverse_lazy("project:task-list")
+
+
+class TaskUpdateView(generic.UpdateView):
+    model = Task
+    fields = "__all__"
+    success_url = reverse_lazy("project:task-list")
+
+
+class TaskDeleteView(generic.DeleteView):
+    model = Task
+    success_url = reverse_lazy("project:task-list")
+

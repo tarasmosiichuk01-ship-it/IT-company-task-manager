@@ -1,5 +1,7 @@
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.views import generic
 
 from project.models import Worker, Task, Position
 
@@ -20,3 +22,27 @@ def index(request: HttpRequest) -> HttpResponse:
         "num_visits": num_visits,
     }
     return render(request, "project/index.html", context=context)
+
+
+class PositionListView(generic.ListView):
+    model = Position
+    context_object_name = "position_list"
+    template_name = "project/position_list.html"
+    paginate_by = 5
+
+
+class PositionCreateView(generic.CreateView):
+    model = Position
+    fields = "__all__"
+    success_url = reverse_lazy("project:position-list")
+
+
+class PositionUpdateView(generic.UpdateView):
+    model = Position
+    fields = "__all__"
+    success_url = reverse_lazy("project:position-list")
+
+
+class PositionDeleteView(generic.DeleteView):
+    model = Position
+    success_url = reverse_lazy("project:position-list")

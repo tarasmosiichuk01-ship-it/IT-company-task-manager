@@ -1,11 +1,13 @@
+from django.contrib.auth import authenticate
+from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
 
+from project.forms import SignUpForm
 from project.models import Worker, Task, Position
-
-
+@login_required
 def index(request: HttpRequest) -> HttpResponse:
     """View function for the home page of the site."""
     num_workers = Worker.objects.count()
@@ -23,6 +25,30 @@ def index(request: HttpRequest) -> HttpResponse:
     }
     return render(request, "project/index.html", context=context)
 
+
+def register_user(request):
+    msg = None
+    success = False
+
+    if request.method == "POST":
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get("username")
+            raw_password = form.cleaned_data.get("password1")
+            user = authenticate(username=username, password=raw_password)
+
+            msg = 'Account created successfully.'
+            success = True
+
+            # return redirect("/login/")
+
+        else:
+            msg = 'Form is not valid'
+    else:
+        form = SignUpForm()
+
+    return render(request, "registration/register.html", {"form": form, "msg": msg, "success": success})
 
 class PositionListView(generic.ListView):
     model = Position

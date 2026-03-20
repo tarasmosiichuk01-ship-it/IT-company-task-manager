@@ -351,13 +351,17 @@
                 </li>
 
                 {% if request.user.is_authenticated %}
-                  <li class="nav-item ms-lg-auto">
-                    <a class="nav-link nav-link-icon me-2" 
-                      href="{% url 'logout' %}">
-                      <i class="fa fa-sign-out me-1"></i>
-                      <p class="d-inline text-sm z-index-1 font-weight-bold" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Sign OUT">Logout</p>
-                    </a>
-                  </li>          
+                <li class="nav-item ms-lg-auto">
+                  <form method="POST" action="{% url 'logout' %}" style="display: inline; margin: 0; padding: 0;">
+                    {% csrf_token %}
+                    <button type="submit" style="background: none; border: none; padding: 0; margin: 0; cursor: pointer; color: inherit; font: inherit;">
+                      <span class="nav-link nav-link-icon me-2 d-flex align-items-center">
+                        <i class="fa fa-sign-out me-1"></i>
+                        <p class="d-inline text-sm z-index-1 font-weight-bold mb-0" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Sign OUT">Logout</p>
+                      </span>
+                    </button>
+                  </form>
+                </li>
                 {% endif %}
 
               </ul>

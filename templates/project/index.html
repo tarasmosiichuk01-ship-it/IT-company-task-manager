@@ -62,6 +62,7 @@
         <div class="row">
           <div class="col-lg-9 mx-auto py-3">
             <div class="row">
+
               {% block content %}
               <div class="col-md-4 position-relative">
                 <div class="p-3 text-center">
@@ -86,6 +87,10 @@
                   <p class="text-sm font-weight-normal">...</p>
                 </div>
               </div>
+              {% endblock %}
+
+              {% block pagination %}
+                {% include "includes/pagination.html" %}
               {% endblock %}
             </div>
           </div>

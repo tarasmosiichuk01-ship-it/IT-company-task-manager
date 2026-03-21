@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
 
-from project.forms import SignUpForm
+from project.forms import SignUpForm, TaskSearchForm
 from project.models import Worker, Task, Position
 @login_required
 def index(request: HttpRequest) -> HttpResponse:
@@ -76,10 +76,25 @@ class PositionDeleteView(generic.DeleteView):
 
 class TaskListView(generic.ListView):
     model = Task
+    queryset = Task.objects.all()
     context_object_name = "task_list"
     template_name = "project/task_list.html"
     paginate_by = 5
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(TaskListView, self).get_context_data(**kwargs)
+        name = self.request.GET.get("name", "")
+        context["name"] = name
+        context["search_form"] = TaskSearchForm(
+            initial={"name": name}
+        )
+        return context
+
+    def get_queryset(self):
+        form = TaskSearchForm(self.request.GET)
+        if form.is_valid():
+            return self.queryset.filter(name__icontains=form.cleaned_data["name"])
+        return self.queryset
 
 class TaskDetailView(generic.DetailView):
     model = Task

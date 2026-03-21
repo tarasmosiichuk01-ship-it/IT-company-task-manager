@@ -8,6 +8,15 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 
 
+class TaskSearchForm(forms.Form):
+    name = forms.CharField(
+        max_length=63,
+        required=False,
+        label="",
+        widget=forms.TextInput(attrs={"placeholder": "Search by name"})
+    )
+
+
 class LoginForm(forms.Form):
     username = forms.CharField(
         widget=forms.TextInput(

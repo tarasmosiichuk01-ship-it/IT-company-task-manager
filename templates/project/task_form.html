@@ -1,12 +1,40 @@
-{% extends "../base.html" %}
-{% load crispy_forms_filters %}
+{% extends "project/index.html" %}
 
 {% block content %}
-  <h1>{{ object|yesno:"Update,Create" }} task</h1>
-  <form action="" method="post" novalidate>
-    {% csrf_token %}
-    {{ form|crispy }}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">{{ object|yesno:"Update,Create" }} task</h1>
+</div>
 
-    <input type="submit" value="Submit" class="btn btn-primary">
-  </form>
+<form action="" method="post" novalidate style="max-width: 600px;">
+    {% csrf_token %}
+
+    {% for field in form %}
+    <div class="mb-3">
+        <label style="font-weight: 600; margin-bottom: 4px; display: block;">
+            {{ field.label }}
+        </label>
+        <div style="border: 1px solid #ccc; border-radius: 8px; padding: 4px 8px;">
+            <style>
+                #{{ field.id_for_label }} {
+                    border: none !important;
+                    outline: none !important;
+                    box-shadow: none !important;
+                    width: 100%;
+                    background: transparent;
+                }
+            </style>
+            {{ field }}
+        </div>
+        {% if field.errors %}
+        <div style="color: red; font-size: 13px; margin-top: 4px;">
+            {{ field.errors }}
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-sm bg-gradient-primary mb-0 mt-2">
+        Submit
+    </button>
+</form>
 {% endblock %}

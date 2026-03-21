@@ -40,6 +40,7 @@
 
   {% include 'includes/../includes/navigation.html' %}
 
+  {% block header %}
   <header class="header-2">
     <div class="page-header min-vh-75 relative" style="background-image: url('{{ ASSETS_ROOT }}/img/bg2.jpg')">
       <span class="mask bg-gradient-primary opacity-4"></span>
@@ -53,12 +54,15 @@
       </div>
     </div>
   </header>
+  {% endblock %}
+
   <div class="card card-body blur shadow-blur mx-3 mx-md-4 mt-n6">
     <section class="pt-3 pb-4" id="count-stats">
       <div class="container">
         <div class="row">
           <div class="col-lg-9 mx-auto py-3">
             <div class="row">
+              {% block content %}
               <div class="col-md-4 position-relative">
                 <div class="p-3 text-center">
                   <h1 class="text-gradient text-primary"><span id="state1" countTo="{{ num_positions }}">0</span>+</h1>
@@ -82,6 +86,7 @@
                   <p class="text-sm font-weight-normal">...</p>
                 </div>
               </div>
+              {% endblock %}
             </div>
           </div>
         </div>

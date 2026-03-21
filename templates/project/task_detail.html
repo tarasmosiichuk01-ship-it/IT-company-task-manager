@@ -1,15 +1,15 @@
-{% extends "../base.html" %}
+{% extends "project/index.html" %}
 
 {% block content %}
   <h1>
     {{ task.name }}
+    <a href="{% url 'project:task-update' pk=task.id %}" class="btn btn-secondary link-to-page">
+      Update
+    </a>
     <a href="{% url 'project:task-delete' pk=task.id %}" class="btn btn-danger link-to-page">
       Delete
     </a>
 
-    <a href="{% url 'project:task-update' pk=task.id %}" class="btn btn-secondary link-to-page">
-      Update
-    </a>
   </h1>
   <p>Task Type: {{ task.task_type.name }}</p>
   <p>Description: {{ task.description }}</p>
@@ -22,7 +22,7 @@
   <hr>
   <ul>
     {% for worker in task.assignees.all %}
-      <li>{{ worker.username }} ({{ worker.first_name }} {{ worker.last_name }})</li>
+      <li>{{ worker.first_name }} {{ worker.last_name }} ({{ worker.position }})</li>
     {% endfor %}
   </ul>
 {% endblock %}

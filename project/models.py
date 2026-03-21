@@ -8,7 +8,6 @@ class Position(models.Model):
     name = models.CharField(max_length=63)
 
     class Meta:
-        ordering = ["name"]
         verbose_name = "position"
         verbose_name_plural = "positions"
 

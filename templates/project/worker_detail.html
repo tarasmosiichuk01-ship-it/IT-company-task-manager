@@ -1,20 +1,21 @@
-{% extends "../base.html" %}
+{% extends "project/index.html" %}
 
 {% block content %}
   <h1>
-    Username: {{ worker.username }}
+    {{ worker.username }}
+    <a href="{% url 'project:worker-update' pk=worker.id %}" class="btn btn-secondary link-to-page">
+      Update
+    </a>
     <a href="{% url 'project:worker-delete' pk=worker.id %}" class="btn btn-danger link-to-page">
       Delete
-    </a>
-
-    <a href="{% url 'project:worker-update' pk=worker.id %}" class="btn btn-secondary link-to-page">
-      Update worker
     </a>
   </h1>
 
   <p><strong>First name:</strong> {{ worker.first_name }}</p>
   <p><strong>Last name:</strong> {{ worker.last_name }}</p>
   <p><strong>Worker position:</strong> {{ worker.position.name }}</p>
+  <p><strong>Email:</strong> {{ worker.email }}</p>
   <p><strong>Is staff:</strong> {{ worker.is_staff }}</p>
+  <p><strong>Tasks:</strong> {{ worker.task }}</p>
 
 {% endblock %}

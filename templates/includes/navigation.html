@@ -70,7 +70,7 @@
                   </a>
                   <div class="dropdown-menu dropdown-menu-animation ms-n3 dropdown-md p-3 border-radius-xl mt-0 mt-lg-3" aria-labelledby="dropdownMenuPages">
                     <div class="d-none d-lg-block">
-                      <a href="/about-us.html" class="dropdown-item border-radius-md">
+                      <a href="{% url 'project:worker-list' %}" class="dropdown-item border-radius-md">
                         <span>Worker list</span>
                       </a>
                       <a href="/contact-us.html" class="dropdown-item border-radius-md">
@@ -94,19 +94,6 @@
                     </button>
                   </form>
                 </li>
-                {% endif %}
-
-
-
-                {% if request.user.is_authenticated %}
-                  <li class="nav-item my-auto ms-3 ms-lg-0">
-                    <form method="POST" action="{% url 'logout' %}" style="display: inline; margin: 0; padding: 0;">
-                      {% csrf_token %}
-                      <button type="submit" class="btn btn-sm bg-gradient-primary mb-0 me-1 mt-2 mt-md-0">
-                        Logout
-                      </button>
-                    </form>
-                  </li>
                 {% endif %}
 
               </ul>

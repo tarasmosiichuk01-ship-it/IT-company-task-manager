@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
 
-from project.forms import SignUpForm, TaskSearchForm, PositionSearchForm
+from project.forms import SignUpForm, TaskSearchForm, PositionSearchForm, WorkerSearchForm, WorkerCreationForm
 from project.models import Worker, Task, Position
 @login_required
 def index(request: HttpRequest) -> HttpResponse:
@@ -135,10 +135,25 @@ class TaskDeleteView(generic.DeleteView):
 
 class WorkerListView(generic.ListView):
     model = Worker
+    queryset = Worker.objects.all()
     context_object_name = "worker_list"
     template_name = "project/worker_list.html"
     paginate_by = 5
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(WorkerListView, self).get_context_data(**kwargs)
+        username = self.request.GET.get("username", "")
+        context["username"] = username
+        context["search_form"] = WorkerSearchForm(
+            initial={"username": username}
+        )
+        return context
+
+    def get_queryset(self):
+        form = WorkerSearchForm(self.request.GET)
+        if form.is_valid():
+            return self.queryset.filter(username__icontains=form.cleaned_data["username"])
+        return self.queryset
 
 class WorkerDetailView(generic.DetailView):
     model = Worker
@@ -146,13 +161,13 @@ class WorkerDetailView(generic.DetailView):
 
 class WorkerCreateView(generic.CreateView):
     model = Worker
-    fields = "__all__"
+    form_class = WorkerCreationForm
     success_url = reverse_lazy("project:worker-list")
 
 
 class WorkerUpdateView(generic.UpdateView):
     model = Worker
-    fields = "__all__"
+    form_class = WorkerCreationForm
     success_url = reverse_lazy("project:worker-list")
 
 

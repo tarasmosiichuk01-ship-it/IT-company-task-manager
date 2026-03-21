@@ -1,37 +1,67 @@
-{% extends "../base.html" %}
+{% extends "project/index.html" %}
 {% load crispy_forms_filters %}
 
 {% block content %}
-    <h1>
-      Worker List
-      <a href="{% url 'project:worker-create' %}" class="btn btn-primary link-to-page">
-        Create
-      </a>
-    </h1>
-    <form method="get" action="" class="form-inline">
-      {{ search_form|crispy }}
-      <input class="btn btn-secondary" type="submit" value="🔎">
-    </form>
-    <br>
-    {% if worker_list %}
-    <table class="table">
-      <tr>
-        <th>ID</th>
-        <th>Username</th>
-        <th>First name</th>
-        <th>Last name</th>
-      </tr>
+  <h1>
+    Worker list
+    <a href="{% url 'project:worker-create' %}" class="btn btn-primary link-to-page mb-2">
+      Create
+    </a>
+  </h1>
+  <form method="get" action="">
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <input
+            type="text"
+            name="username"
+            value="{{ username }}"
+            placeholder="Search by username..."
+            style="border: 1px solid #ccc; border-radius: 8px; padding: 8px 12px; font-size: 14px; outline: none; width: 250px;"
+        >
+        <button class="btn btn-secondary mb-1" >
+            🔎
+        </button>
+    </div>
+</form>
+
+  {% if worker_list %}
+   <table class="table">
+    <tr>
+      <th>№</th>
+      <th>Username</th>
+      <th>Position</th>
+      <th>Update worker</th>
+      <th>Delete worker</th>
+    </tr>
     {% for worker in worker_list %}
       <tr>
-        <td>{{ worker.id }}</td>
-        <td><a href="{{ worker.get_absolute_url }}">{{ worker.username }} {% if user == worker %} (Me){% endif %}</a></td>
-        <td>{{ worker.first_name }}</td>
-        <td>{{ worker.last_name }}</td>
+        <td>
+          {{ worker.id }}
+        </td>
+        <td>
+          <a href="{% url 'project:worker-detail' pk=worker.id %}">
+            {{ worker.username }}
+          </a>
+        </td>
+        <td>
+          {{ worker.position }}
+        </td>
+        <td>
+          <a class="btn btn-secondary link-to-page"
+              href="{% url 'project:worker-update' pk=worker.id %}">
+            Update
+          </a>
+        </td>
+        <td>
+          <a class="btn btn-primary link-to-page"
+             href="{% url 'project:worker-delete' pk=worker.id%}">
+            Delete
+          </a>
+        </td>
       </tr>
     {% endfor %}
 
-    </table>
-    {% else %}
-      <p>There are no workers in the company.</p>
-    {% endif %}
+   </table>
+  {% else %}
+    <p>There are no workers in company</p>
+  {% endif %}
 {% endblock %}

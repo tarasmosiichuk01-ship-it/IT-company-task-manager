@@ -13,6 +13,15 @@ class WorkerCreationForm(UserCreationForm):
         fields = ["username", "first_name", "last_name", "email", "position"]
 
 
+class TaskTypeSearchForm(forms.Form):
+    name = forms.CharField(
+        max_length=63,
+        required=False,
+        label="",
+        widget=forms.TextInput(attrs={"placeholder": "Search by name"})
+    )
+
+
 class TaskSearchForm(forms.Form):
     name = forms.CharField(
         max_length=63,

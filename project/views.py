@@ -5,8 +5,11 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
 
-from project.forms import SignUpForm, TaskSearchForm, PositionSearchForm, WorkerSearchForm, WorkerCreationForm
-from project.models import Worker, Task, Position
+from project.forms import SignUpForm, TaskSearchForm, PositionSearchForm, WorkerSearchForm, WorkerCreationForm, \
+    TaskTypeSearchForm
+from project.models import Worker, Task, Position, TaskType
+
+
 @login_required
 def index(request: HttpRequest) -> HttpResponse:
     """View function for the home page of the site."""
@@ -90,6 +93,42 @@ class PositionDeleteView(generic.DeleteView):
     success_url = reverse_lazy("project:position-list")
 
 
+class TaskTypeListView(generic.ListView):
+    model = TaskType
+    queryset = TaskType.objects.all()
+    template_name = "project/task_type_list.html"
+    context_object_name = "task_type_list"
+    paginate_by = 5
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(TaskTypeListView, self).get_context_data(**kwargs)
+        name = self.request.GET.get("name", "")
+        context["name"] = name
+        context["search_form"] = TaskTypeSearchForm(
+            initial={"name": name}
+        )
+        return context
+
+    def get_queryset(self):
+        form = TaskTypeSearchForm(self.request.GET)
+        if form.is_valid():
+            return self.queryset.filter(name__icontains=form.cleaned_data["name"])
+        return self.queryset
+
+
+class TaskTypeCreateView(generic.CreateView):
+    model = TaskType
+    fields = "__all__"
+    success_url = reverse_lazy("project:task-type-list")
+    template_name = "project/task_type_form.html"
+
+
+class TaskTypeDeleteView(generic.DeleteView):
+    model = TaskType
+    template_name = "project/task_type_confirm_delete.html"
+    success_url = reverse_lazy("project:task-type-list")
+
+
 class TaskListView(generic.ListView):
     model = Task
     queryset = Task.objects.all()
@@ -111,6 +150,7 @@ class TaskListView(generic.ListView):
         if form.is_valid():
             return self.queryset.filter(name__icontains=form.cleaned_data["name"])
         return self.queryset
+
 
 class TaskDetailView(generic.DetailView):
     model = Task

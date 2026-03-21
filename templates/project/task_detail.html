@@ -22,7 +22,7 @@
   <hr>
   <ul>
     {% for worker in task.assignees.all %}
-      <li>{{ worker.first_name }} {{ worker.last_name }} ({{ worker.position }})</li>
+      <li><a href="{% url 'project:worker-detail' pk=worker.id %}">{{ worker.first_name }} {{ worker.last_name }} ({{ worker.position }})</a></li>
     {% endfor %}
   </ul>
 {% endblock %}

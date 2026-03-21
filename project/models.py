@@ -19,7 +19,6 @@ class TaskType(models.Model):
     name = models.CharField(max_length=63)
 
     class Meta:
-        ordering = ["name"]
         verbose_name = "task type"
         verbose_name_plural = "task types"
 

@@ -123,6 +123,11 @@ class TaskTypeCreateView(generic.CreateView):
     template_name = "project/task_type_form.html"
 
 
+class TaskTypeDetailView(generic.DetailView):
+    model = TaskType
+    template_name = "project/task_type_detail.html"
+
+
 class TaskTypeDeleteView(generic.DeleteView):
     model = TaskType
     template_name = "project/task_type_confirm_delete.html"

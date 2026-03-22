@@ -36,7 +36,9 @@
           {{ type.id }}
         </td>
         <td>
+          <a href="{% url 'project:task-type-detail' pk=type.id %}">
           {{ type.name }}
+          </a>
         </td>
         <td>
           <a class="btn btn-primary link-to-page"

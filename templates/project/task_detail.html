@@ -3,13 +3,13 @@
 {% block content %}
   <h1>
     {{ task.name }}
+    <br>
     <a href="{% url 'project:task-update' pk=task.id %}" class="btn btn-secondary link-to-page">
       Update
     </a>
     <a href="{% url 'project:task-delete' pk=task.id %}" class="btn btn-danger link-to-page">
       Delete
     </a>
-
     {% if task in user.tasks.all %}
       <a href="{% url 'project:toggle-task-assign' pk=task.id %}" class="btn btn-danger link-to-page">
         Delete me from this task

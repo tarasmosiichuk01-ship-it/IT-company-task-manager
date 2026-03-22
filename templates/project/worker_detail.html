@@ -15,7 +15,36 @@
   <p><strong>Last name:</strong> {{ worker.last_name }}</p>
   <p><strong>Worker position:</strong> {{ worker.position.name }}</p>
   <p><strong>Email:</strong> {{ worker.email }}</p>
-  <p><strong>Is staff:</strong> {{ worker.is_staff }}</p>
-  <p><strong>Tasks:</strong> {{ worker.task }}</p>
+
+  <h2>Tasks</h2>
+  <hr>
+  {% if worker.tasks.all %}
+    <h4>✅ Completed</h4>
+    <ul>
+    {% for task in worker.tasks.all %}
+      {% if task.is_completed %}
+        <li>
+          <a href="{% url 'project:task-detail' pk=task.id %}">{{ task.name }}</a>
+          — {{ task.task_type }} | Priority: {{ task.priority }} |
+        </li>
+      {% endif %}
+    {% endfor %}
+    </ul>
+
+    <h4>❌ Not completed</h4>
+    <ul>
+      {% for task in worker.tasks.all %}
+        {% if not task.is_completed %}
+          <li>
+            <a href="{% url 'project:task-detail' pk=task.id %}">{{ task.name }}</a>
+            — {{ task.task_type }} | Priority: {{ task.priority }} |
+          </li>
+        {% endif %}
+    {% endfor %}
+    </ul>
+
+  {% else %}
+    <p>No tasks assigned to this worker.</p>
+  {% endif %}
 
 {% endblock %}

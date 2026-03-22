@@ -10,6 +10,16 @@
       Delete
     </a>
 
+    {% if task in user.tasks.all %}
+      <a href="{% url 'project:toggle-task-assign' pk=task.id %}" class="btn btn-danger link-to-page">
+        Delete me from this task
+      </a>
+    {% else %}
+      <a href="{% url 'project:toggle-task-assign' pk=task.id %}" class="btn btn-success link-to-page">
+        Assign me to this task
+      </a>
+    {% endif %}
+
   </h1>
   <p>Task Type: {{ task.task_type.name }}</p>
   <p>Description: {{ task.description }}</p>
@@ -22,7 +32,11 @@
   <hr>
   <ul>
     {% for worker in task.assignees.all %}
-      <li><a href="{% url 'project:worker-detail' pk=worker.id %}">{{ worker.first_name }} {{ worker.last_name }} ({{ worker.position }})</a></li>
+      <li>
+        <a href="{% url 'project:worker-detail' pk=worker.id %}">
+        {{ worker.first_name }} {{ worker.last_name }} ({{ worker.position }}) {% if user == worker %} (Me) {% endif %}
+        </a>
+      </li>
     {% endfor %}
   </ul>
 {% endblock %}

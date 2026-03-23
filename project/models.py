@@ -2,7 +2,6 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.urls import reverse
-from packaging.tags import Tag
 
 
 class Position(models.Model):
@@ -41,7 +40,7 @@ class Worker(AbstractUser):
         verbose_name_plural = "workers"
 
     def __str__(self):
-        return f"{self.username} ({self.position})"
+        return f"{self.username} ({self.first_name} {self.last_name})"
 
     def get_absolute_url(self):
         return reverse("project:worker-detail", kwargs={"pk": self.pk})
@@ -107,6 +106,9 @@ class Team(models.Model):
     class Meta:
         verbose_name = "team"
         verbose_name_plural = "teams"
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class Tag(models.Model):

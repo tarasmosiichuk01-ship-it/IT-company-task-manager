@@ -79,3 +79,26 @@ class Task(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+
+class Project(models.Model):
+    name = models.CharField(max_length=63)
+    description = models.TextField(blank=True)
+    tasks = models.ManyToManyField(Task, related_name="projects")
+
+    class Meta:
+        verbose_name = "project"
+        verbose_name_plural = "projects"
+
+
+class Team(models.Model):
+    name = models.CharField(max_length=63)
+    workers = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name="teams",
+    )
+    projects = models.ManyToManyField(Project, related_name="teams")
+
+    class Meta:
+        verbose_name = "team"
+        verbose_name_plural = "teams"

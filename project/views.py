@@ -13,9 +13,12 @@ from project.forms import (
     WorkerCreationForm,
     TaskTypeSearchForm,
     TaskForm,
-    ProjectForm, ProjectSearchForm
+    ProjectForm,
+    ProjectSearchForm,
+    TeamForm,
+    TeamSearchForm,
 )
-from project.models import Worker, Task, Position, TaskType, Project
+from project.models import Worker, Task, Position, TaskType, Project, Team
 
 
 @login_required
@@ -269,6 +272,49 @@ class ProjectUpdateView(generic.UpdateView):
 class ProjectDeleteView(generic.DeleteView):
     model = Project
     success_url = reverse_lazy("project:project-list")
+
+
+class TeamListView(generic.ListView):
+    model = Team
+    queryset = Team.objects.all()
+    paginate_by = 5
+
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(TeamListView, self).get_context_data(**kwargs)
+        name = self.request.GET.get("name", "")
+        context["name"] = name
+        context["search_form"] = TeamSearchForm(
+            initial={"name": name}
+        )
+        return context
+
+    def get_queryset(self):
+        form = TeamSearchForm(self.request.GET)
+        if form.is_valid():
+            return self.queryset.filter(name__icontains=form.cleaned_data["name"])
+        return self.queryset
+
+
+class TeamDetailView(generic.DetailView):
+    model = Team
+
+
+class TeamCreateView(generic.CreateView):
+    model = Team
+    form_class = TeamForm
+    success_url = reverse_lazy("project:team-list")
+
+
+class TeamUpdateView(generic.UpdateView):
+    model = Team
+    form_class = TeamForm
+    success_url = reverse_lazy("project:team-list")
+
+
+class TeamDeleteView(generic.DeleteView):
+    model = Team
+    success_url = reverse_lazy("project:team-list")
 
 
 @login_required

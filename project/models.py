@@ -40,7 +40,7 @@ class Worker(AbstractUser):
         verbose_name_plural = "workers"
 
     def __str__(self):
-        return f"{self.username} ({self.first_name} {self.last_name})"
+        return f"{self.username} ({self.position})"
 
     def get_absolute_url(self):
         return reverse("project:worker-detail", kwargs={"pk": self.pk})
@@ -89,6 +89,9 @@ class Project(models.Model):
     class Meta:
         verbose_name = "project"
         verbose_name_plural = "projects"
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class Team(models.Model):

@@ -86,7 +86,7 @@
 
                 {% if request.user.is_authenticated %}
                 <li class="nav-item my-auto ms-3 ms-lg-0 d-flex align-items-center gap-2">
-                  <span class="text-sm font-weight-bold"><a href="{{ user.get_absolute_url }}">{{ user.get_username }}</a></span>
+                  <span class="text-sm font-weight-bold">User: <a href="{{ user.get_absolute_url }}">{{ user.get_username }}</a></span>
                   <form method="POST" action="{% url 'logout' %}" style="display: inline; margin: 0; padding: 0;">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-sm bg-gradient-primary mb-0 me-1 mt-2 mt-md-0">

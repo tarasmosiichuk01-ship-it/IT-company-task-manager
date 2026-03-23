@@ -19,7 +19,7 @@ class TaskForm(forms.ModelForm):
 
     class Meta:
         model = Task
-        fields = "__all__"
+        fields = ["name", "description", "deadline", "is_completed", "priority", "task_type", "assignees", "tags"]
 
 
 class ProjectForm(forms.ModelForm):

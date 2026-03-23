@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.urls import reverse
+from packaging.tags import Tag
 
 
 class Position(models.Model):
@@ -72,6 +73,7 @@ class Task(models.Model):
         related_name="tasks",
         blank=True
     )
+    tags = models.ManyToManyField("Tag", related_name="tasks", blank=True)
 
     class Meta:
         verbose_name = "task"
@@ -105,3 +107,14 @@ class Team(models.Model):
     class Meta:
         verbose_name = "team"
         verbose_name_plural = "teams"
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=63)
+
+    class Meta:
+        verbose_name = "tag"
+        verbose_name_plural = "tags"
+
+    def __str__(self) -> str:
+        return self.name

@@ -1,4 +1,4 @@
-{% extends "project/index.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
   <h1>
@@ -26,9 +26,9 @@
   <p>Deadline: {{ task.deadline }}</p>
   <p>Is_completed: {{ task.is_completed }}</p>
   <p>Priority: {{ task.priority }}</p>
-  <h1>
+  <h2>
     Workers
-  </h1>
+  </h2>
   <hr>
   <ul>
     {% for worker in task.assignees.all %}
@@ -37,6 +37,12 @@
         {{ worker.first_name }} {{ worker.last_name }} ({{ worker.position }}) {% if user == worker %} (Me) {% endif %}
         </a>
       </li>
+    {% endfor %}
+  </ul>
+  <h2>Tags</h2>
+  <ul>
+    {% for tag in task.tags.all %}
+      <li>#{{ tag.name }}</li>
     {% endfor %}
   </ul>
 {% endblock %}

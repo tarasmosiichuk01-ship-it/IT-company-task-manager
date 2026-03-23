@@ -5,9 +5,17 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
 
-from project.forms import SignUpForm, TaskSearchForm, PositionSearchForm, WorkerSearchForm, WorkerCreationForm, \
-    TaskTypeSearchForm, TaskForm
-from project.models import Worker, Task, Position, TaskType
+from project.forms import (
+    SignUpForm,
+    TaskSearchForm,
+    PositionSearchForm,
+    WorkerSearchForm,
+    WorkerCreationForm,
+    TaskTypeSearchForm,
+    TaskForm,
+    ProjectForm, ProjectSearchForm
+)
+from project.models import Worker, Task, Position, TaskType, Project
 
 
 @login_required
@@ -219,6 +227,48 @@ class WorkerUpdateView(generic.UpdateView):
 class WorkerDeleteView(generic.DeleteView):
     model = Worker
     success_url = reverse_lazy("project:worker-list")
+
+
+class ProjectListView(generic.ListView):
+    model = Project
+    queryset = Project.objects.all()
+    paginate_by = 5
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(ProjectListView, self).get_context_data(**kwargs)
+        name = self.request.GET.get("name", "")
+        context["name"] = name
+        context["search_form"] = ProjectSearchForm(
+            initial={"name": name}
+        )
+        return context
+
+    def get_queryset(self):
+        form = ProjectSearchForm(self.request.GET)
+        if form.is_valid():
+            return self.queryset.filter(name__icontains=form.cleaned_data["name"])
+        return self.queryset
+
+
+class ProjectDetailView(generic.DetailView):
+    model = Project
+
+
+class ProjectCreateView(generic.CreateView):
+    model = Project
+    form_class = ProjectForm
+    success_url = reverse_lazy("project:project-list")
+
+
+class ProjectUpdateView(generic.UpdateView):
+    model = Project
+    form_class = ProjectForm
+    success_url = reverse_lazy("project:project-list")
+
+
+class ProjectDeleteView(generic.DeleteView):
+    model = Project
+    success_url = reverse_lazy("project:project-list")
 
 
 @login_required

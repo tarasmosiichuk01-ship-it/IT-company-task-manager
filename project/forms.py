@@ -7,7 +7,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 
-from project.models import Task
+from project.models import Task, Project
 
 
 class TaskForm(forms.ModelForm):
@@ -19,6 +19,18 @@ class TaskForm(forms.ModelForm):
 
     class Meta:
         model = Task
+        fields = "__all__"
+
+
+class ProjectForm(forms.ModelForm):
+    tasks = forms.ModelMultipleChoiceField(
+        queryset=Task.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
+
+    class Meta:
+        model = Project
         fields = "__all__"
 
 
@@ -61,6 +73,15 @@ class WorkerSearchForm(forms.Form):
         required=False,
         label="",
         widget=forms.TextInput(attrs={"placeholder": "Search by username"})
+    )
+
+
+class ProjectSearchForm(forms.Form):
+    name = forms.CharField(
+        max_length=63,
+        required=False,
+        label="",
+        widget=forms.TextInput(attrs={"placeholder": "Search by name"})
     )
 
 

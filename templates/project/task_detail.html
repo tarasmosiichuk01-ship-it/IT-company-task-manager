@@ -24,7 +24,7 @@
   <p>Task Type: {{ task.task_type.name }}</p>
   <p>Description: {{ task.description }}</p>
   <p>Deadline: {{ task.deadline }}</p>
-  <p>Is_completed: {{ task.is_completed }}</p>
+  <p>Is_completed: {{ task.is_completed|yesno:"✅ Yes,❌ No" }}</p>
   <p>Priority: {{ task.priority }}</p>
   <h2>
     Workers
@@ -37,12 +37,6 @@
         {{ worker.first_name }} {{ worker.last_name }} ({{ worker.position }}) {% if user == worker %} (Me) {% endif %}
         </a>
       </li>
-    {% endfor %}
-  </ul>
-  <h2>Tags</h2>
-  <ul>
-    {% for tag in task.tags.all %}
-      <li>#{{ tag.name }}</li>
     {% endfor %}
   </ul>
 {% endblock %}

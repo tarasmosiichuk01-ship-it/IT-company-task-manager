@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from project.models import Position, TaskType, Worker, Task, Project, Team, Tag
+from project.models import Position, TaskType, Worker, Task, Project, Team
 
 
 class ModelTests(TestCase):
@@ -53,7 +53,3 @@ class ModelTests(TestCase):
     def test_team_str(self):
         team = Team.objects.create(name="test")
         self.assertEqual(str(team), team.name)
-
-    def test_tag_str(self):
-        tag = Tag.objects.create(name="test")
-        self.assertEqual(str(tag), tag.name)

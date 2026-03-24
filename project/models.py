@@ -72,7 +72,6 @@ class Task(models.Model):
         related_name="tasks",
         blank=True
     )
-    tags = models.ManyToManyField("Tag", related_name="tasks", blank=True)
 
     class Meta:
         verbose_name = "task"
@@ -106,17 +105,6 @@ class Team(models.Model):
     class Meta:
         verbose_name = "team"
         verbose_name_plural = "teams"
-
-    def __str__(self) -> str:
-        return self.name
-
-
-class Tag(models.Model):
-    name = models.CharField(max_length=63)
-
-    class Meta:
-        verbose_name = "tag"
-        verbose_name_plural = "tags"
 
     def __str__(self) -> str:
         return self.name

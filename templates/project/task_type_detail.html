@@ -6,5 +6,7 @@
   <h5>All tasks with type {{ tasktype.name }}:</h5>
   {% for task in tasktype.tasks.all %}
     <li><a href="{% url 'project:task-detail' pk=task.id %}">{{ task }}</a></li>
+  {% empty %}
+    <p>No tasks.</p>
   {% endfor %}
 {% endblock %}

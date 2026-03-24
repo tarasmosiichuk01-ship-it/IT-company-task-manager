@@ -43,7 +43,7 @@
           </a>
         </td>
         <td>
-          {{ task.is_completed }}
+          {{ task.is_completed|yesno:"✅ Yes,❌ No" }}
         </td>
         <td>
           <a class="btn btn-secondary link-to-page"

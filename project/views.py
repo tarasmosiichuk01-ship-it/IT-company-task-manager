@@ -1,8 +1,8 @@
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views import generic
 
@@ -17,7 +17,7 @@ from project.forms import (
     ProjectForm,
     ProjectSearchForm,
     TeamForm,
-    TeamSearchForm,
+    TeamSearchForm, WorkerUpdateForm,
 )
 from project.models import Worker, Task, Position, TaskType, Project, Team
 
@@ -56,12 +56,9 @@ def register_user(request):
             username = form.cleaned_data.get("username")
             raw_password = form.cleaned_data.get("password1")
             user = authenticate(username=username, password=raw_password)
-
-            msg = 'Account created successfully.'
-            success = True
-
-            # return redirect("/login/")
-
+            if user:
+                login(request, user)
+            return redirect("project:index")
         else:
             msg = 'Form is not valid'
     else:
@@ -71,9 +68,6 @@ def register_user(request):
 
 class PositionListView(LoginRequiredMixin, generic.ListView):
     model = Position
-    queryset = Position.objects.all()
-    context_object_name = "position_list"
-    template_name = "project/position_list.html"
     paginate_by = 5
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -86,10 +80,11 @@ class PositionListView(LoginRequiredMixin, generic.ListView):
         return context
 
     def get_queryset(self):
+        queryset = Position.objects.all()
         form = PositionSearchForm(self.request.GET)
         if form.is_valid():
-            return self.queryset.filter(name__icontains=form.cleaned_data["name"])
-        return self.queryset
+            return queryset.filter(name__icontains=form.cleaned_data["name"])
+        return queryset
 
 
 class PositionDetailView(LoginRequiredMixin, generic.DetailView):
@@ -115,7 +110,6 @@ class PositionDeleteView(LoginRequiredMixin, generic.DeleteView):
 
 class TaskTypeListView(LoginRequiredMixin, generic.ListView):
     model = TaskType
-    queryset = TaskType.objects.all()
     template_name = "project/task_type_list.html"
     context_object_name = "task_type_list"
     paginate_by = 5
@@ -130,10 +124,11 @@ class TaskTypeListView(LoginRequiredMixin, generic.ListView):
         return context
 
     def get_queryset(self):
+        queryset = TaskType.objects.all()
         form = TaskTypeSearchForm(self.request.GET)
         if form.is_valid():
-            return self.queryset.filter(name__icontains=form.cleaned_data["name"])
-        return self.queryset
+            return queryset.filter(name__icontains=form.cleaned_data["name"])
+        return queryset
 
 
 class TaskTypeCreateView(LoginRequiredMixin, generic.CreateView):
@@ -148,6 +143,13 @@ class TaskTypeDetailView(LoginRequiredMixin, generic.DetailView):
     template_name = "project/task_type_detail.html"
 
 
+class TaskTypeUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = TaskType
+    fields = "__all__"
+    success_url = reverse_lazy("project:task-type-list")
+    template_name = "project/task_type_form.html"
+
+
 class TaskTypeDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = TaskType
     template_name = "project/task_type_confirm_delete.html"
@@ -156,9 +158,6 @@ class TaskTypeDeleteView(LoginRequiredMixin, generic.DeleteView):
 
 class TaskListView(LoginRequiredMixin, generic.ListView):
     model = Task
-    queryset = Task.objects.all()
-    context_object_name = "task_list"
-    template_name = "project/task_list.html"
     paginate_by = 5
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -171,14 +170,20 @@ class TaskListView(LoginRequiredMixin, generic.ListView):
         return context
 
     def get_queryset(self):
+        queryset = Task.objects.select_related("project", "task_type").prefetch_related("assignees")
         form = TaskSearchForm(self.request.GET)
         if form.is_valid():
-            return self.queryset.filter(name__icontains=form.cleaned_data["name"])
-        return self.queryset
+            return queryset.filter(name__icontains=form.cleaned_data["name"])
+        return queryset
 
 
 class TaskDetailView(LoginRequiredMixin, generic.DetailView):
     model = Task
+
+    def get_queryset(self):
+        return Task.objects.select_related(
+            "task_type", "project"
+        ).prefetch_related("assignees")
 
 
 class TaskCreateView(LoginRequiredMixin, generic.CreateView):
@@ -200,9 +205,6 @@ class TaskDeleteView(LoginRequiredMixin, generic.DeleteView):
 
 class WorkerListView(LoginRequiredMixin, generic.ListView):
     model = Worker
-    queryset = Worker.objects.all()
-    context_object_name = "worker_list"
-    template_name = "project/worker_list.html"
     paginate_by = 5
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -215,13 +217,18 @@ class WorkerListView(LoginRequiredMixin, generic.ListView):
         return context
 
     def get_queryset(self):
+        queryset = Worker.objects.select_related("position")
         form = WorkerSearchForm(self.request.GET)
         if form.is_valid():
-            return self.queryset.filter(username__icontains=form.cleaned_data["username"])
-        return self.queryset
+            return queryset.filter(username__icontains=form.cleaned_data["username"])
+        return queryset
+
 
 class WorkerDetailView(LoginRequiredMixin, generic.DetailView):
     model = Worker
+
+    def get_queryset(self):
+        return Worker.objects.select_related("position").prefetch_related("tasks")
 
 
 class WorkerCreateView(LoginRequiredMixin, generic.CreateView):
@@ -232,7 +239,7 @@ class WorkerCreateView(LoginRequiredMixin, generic.CreateView):
 
 class WorkerUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = Worker
-    form_class = WorkerCreationForm
+    form_class = WorkerUpdateForm
     success_url = reverse_lazy("project:worker-list")
 
 
@@ -243,7 +250,6 @@ class WorkerDeleteView(LoginRequiredMixin, generic.DeleteView):
 
 class ProjectListView(LoginRequiredMixin, generic.ListView):
     model = Project
-    queryset = Project.objects.all()
     paginate_by = 5
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -256,14 +262,18 @@ class ProjectListView(LoginRequiredMixin, generic.ListView):
         return context
 
     def get_queryset(self):
+        queryset = Project.objects.prefetch_related("tasks")
         form = ProjectSearchForm(self.request.GET)
         if form.is_valid():
-            return self.queryset.filter(name__icontains=form.cleaned_data["name"])
-        return self.queryset
+            return queryset.filter(name__icontains=form.cleaned_data["name"])
+        return queryset
 
 
 class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
     model = Project
+
+    def get_queryset(self):
+        return Project.objects.prefetch_related("tasks", "teams")
 
 
 class ProjectCreateView(LoginRequiredMixin, generic.CreateView):
@@ -285,9 +295,7 @@ class ProjectDeleteView(LoginRequiredMixin, generic.DeleteView):
 
 class TeamListView(LoginRequiredMixin, generic.ListView):
     model = Team
-    queryset = Team.objects.all()
     paginate_by = 5
-
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(TeamListView, self).get_context_data(**kwargs)
@@ -299,10 +307,11 @@ class TeamListView(LoginRequiredMixin, generic.ListView):
         return context
 
     def get_queryset(self):
+        queryset = Team.objects.prefetch_related("workers", "projects")
         form = TeamSearchForm(self.request.GET)
         if form.is_valid():
-            return self.queryset.filter(name__icontains=form.cleaned_data["name"])
-        return self.queryset
+            return queryset.filter(name__icontains=form.cleaned_data["name"])
+        return queryset
 
 
 class TeamDetailView(LoginRequiredMixin, generic.DetailView):
@@ -328,9 +337,10 @@ class TeamDeleteView(LoginRequiredMixin, generic.DeleteView):
 
 @login_required
 def toggle_assign_to_task(request, pk):
-    worker = Worker.objects.get(id=request.user.id)
-    if (Task.objects.get(id=pk) in worker.tasks.all()):
-        worker.tasks.remove(pk)
+    task = get_object_or_404(Task, pk=pk)
+    worker = request.user
+    if task in worker.tasks.all():
+        worker.tasks.remove(task)
     else:
-        worker.tasks.add(pk)
+        worker.tasks.add(task)
     return HttpResponseRedirect(reverse_lazy("project:task-detail", args=[pk]))

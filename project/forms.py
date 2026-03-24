@@ -92,6 +92,12 @@ class WorkerSearchForm(forms.Form):
     )
 
 
+class WorkerUpdateForm(forms.ModelForm):
+    class Meta:
+        model = get_user_model()
+        fields = ["username", "first_name", "last_name", "email", "position"]
+
+
 class ProjectSearchForm(forms.Form):
     name = forms.CharField(
         max_length=63,

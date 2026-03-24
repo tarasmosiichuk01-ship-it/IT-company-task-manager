@@ -5,7 +5,7 @@ from django.urls import reverse
 
 
 class Position(models.Model):
-    name = models.CharField(max_length=63)
+    name = models.CharField(max_length=63, unique=True)
 
     class Meta:
         verbose_name = "position"
@@ -16,7 +16,7 @@ class Position(models.Model):
 
 
 class TaskType(models.Model):
-    name = models.CharField(max_length=63)
+    name = models.CharField(max_length=63, unique=True)
 
     class Meta:
         verbose_name = "task type"
@@ -36,11 +36,13 @@ class Worker(AbstractUser):
     )
 
     class Meta:
+        ordering = ["username"]
         verbose_name = "worker"
         verbose_name_plural = "workers"
 
     def __str__(self):
-        return f"{self.username} ({self.first_name} {self.last_name})"
+        full_name = self.get_full_name()
+        return f"{self.username} ({full_name})" if full_name.strip() else self.username
 
     def get_absolute_url(self):
         return reverse("project:worker-detail", kwargs={"pk": self.pk})
@@ -64,7 +66,7 @@ class Task(models.Model):
     )
     task_type = models.ForeignKey(
         TaskType,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="tasks"
     )
     assignees = models.ManyToManyField(
@@ -72,30 +74,48 @@ class Task(models.Model):
         related_name="tasks",
         blank=True
     )
+    project = models.ForeignKey(
+        "Project",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="tasks"
+    )
 
     class Meta:
+        ordering = ["is_completed", "-deadline"]
+        indexes = [
+            models.Index(fields=["is_completed"]),
+            models.Index(fields=["priority"]),
+        ]
         verbose_name = "task"
         verbose_name_plural = "tasks"
 
     def __str__(self) -> str:
         return self.name
 
+    def get_absolute_url(self):
+        return reverse("project:task-detail", kwargs={"pk": self.pk})
+
 
 class Project(models.Model):
-    name = models.CharField(max_length=63)
+    name = models.CharField(max_length=63, unique=True)
     description = models.TextField(blank=True)
-    tasks = models.ManyToManyField(Task, related_name="projects")
 
     class Meta:
+        ordering = ["name"]
         verbose_name = "project"
         verbose_name_plural = "projects"
 
     def __str__(self) -> str:
         return self.name
 
+    def get_absolute_url(self):
+        return reverse("project:project-detail", kwargs={"pk": self.pk})
+
 
 class Team(models.Model):
-    name = models.CharField(max_length=63)
+    name = models.CharField(max_length=63, unique=True)
     workers = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name="teams",
@@ -103,8 +123,12 @@ class Team(models.Model):
     projects = models.ManyToManyField(Project, related_name="teams")
 
     class Meta:
+        ordering = ["name"]
         verbose_name = "team"
         verbose_name_plural = "teams"
 
     def __str__(self) -> str:
         return self.name
+
+    def get_absolute_url(self):
+        return reverse("project:team-detail", kwargs={"pk": self.pk})

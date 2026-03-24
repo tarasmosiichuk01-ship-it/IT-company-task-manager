@@ -36,3 +36,15 @@ class AdminSiteTests(TestCase):
         url = reverse("admin:project_worker_change", args=[self.worker.id])
         response = self.client.get(url)
         self.assertContains(response, self.worker.position)
+
+    def test_worker_add_fieldsets(self):
+        """
+        Test that additional fields (first_name, last_name, position)
+        are present on worker add admin page
+        :return:
+        """
+        url = reverse("admin:project_worker_add")
+        response = self.client.get(url)
+        self.assertContains(response, self.worker.first_name)
+        self.assertContains(response, self.worker.last_name)
+        self.assertContains(response, self.worker.position)

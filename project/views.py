@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse_lazy
@@ -68,7 +69,7 @@ def register_user(request):
 
     return render(request, "registration/register.html", {"form": form, "msg": msg, "success": success})
 
-class PositionListView(generic.ListView):
+class PositionListView(LoginRequiredMixin, generic.ListView):
     model = Position
     queryset = Position.objects.all()
     context_object_name = "position_list"
@@ -91,28 +92,28 @@ class PositionListView(generic.ListView):
         return self.queryset
 
 
-class PositionDetailView(generic.DetailView):
+class PositionDetailView(LoginRequiredMixin, generic.DetailView):
     model = Position
 
 
-class PositionCreateView(generic.CreateView):
-    model = Position
-    fields = "__all__"
-    success_url = reverse_lazy("project:position-list")
-
-
-class PositionUpdateView(generic.UpdateView):
+class PositionCreateView(LoginRequiredMixin, generic.CreateView):
     model = Position
     fields = "__all__"
     success_url = reverse_lazy("project:position-list")
 
 
-class PositionDeleteView(generic.DeleteView):
+class PositionUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = Position
+    fields = "__all__"
+    success_url = reverse_lazy("project:position-list")
+
+
+class PositionDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = Position
     success_url = reverse_lazy("project:position-list")
 
 
-class TaskTypeListView(generic.ListView):
+class TaskTypeListView(LoginRequiredMixin, generic.ListView):
     model = TaskType
     queryset = TaskType.objects.all()
     template_name = "project/task_type_list.html"
@@ -135,25 +136,25 @@ class TaskTypeListView(generic.ListView):
         return self.queryset
 
 
-class TaskTypeCreateView(generic.CreateView):
+class TaskTypeCreateView(LoginRequiredMixin, generic.CreateView):
     model = TaskType
     fields = "__all__"
     success_url = reverse_lazy("project:task-type-list")
     template_name = "project/task_type_form.html"
 
 
-class TaskTypeDetailView(generic.DetailView):
+class TaskTypeDetailView(LoginRequiredMixin, generic.DetailView):
     model = TaskType
     template_name = "project/task_type_detail.html"
 
 
-class TaskTypeDeleteView(generic.DeleteView):
+class TaskTypeDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = TaskType
     template_name = "project/task_type_confirm_delete.html"
     success_url = reverse_lazy("project:task-type-list")
 
 
-class TaskListView(generic.ListView):
+class TaskListView(LoginRequiredMixin, generic.ListView):
     model = Task
     queryset = Task.objects.all()
     context_object_name = "task_list"
@@ -176,28 +177,28 @@ class TaskListView(generic.ListView):
         return self.queryset
 
 
-class TaskDetailView(generic.DetailView):
+class TaskDetailView(LoginRequiredMixin, generic.DetailView):
     model = Task
 
 
-class TaskCreateView(generic.CreateView):
-    model = Task
-    form_class = TaskForm
-    success_url = reverse_lazy("project:task-list")
-
-
-class TaskUpdateView(generic.UpdateView):
+class TaskCreateView(LoginRequiredMixin, generic.CreateView):
     model = Task
     form_class = TaskForm
     success_url = reverse_lazy("project:task-list")
 
 
-class TaskDeleteView(generic.DeleteView):
+class TaskUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = Task
+    form_class = TaskForm
+    success_url = reverse_lazy("project:task-list")
+
+
+class TaskDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = Task
     success_url = reverse_lazy("project:task-list")
 
 
-class WorkerListView(generic.ListView):
+class WorkerListView(LoginRequiredMixin, generic.ListView):
     model = Worker
     queryset = Worker.objects.all()
     context_object_name = "worker_list"
@@ -219,28 +220,28 @@ class WorkerListView(generic.ListView):
             return self.queryset.filter(username__icontains=form.cleaned_data["username"])
         return self.queryset
 
-class WorkerDetailView(generic.DetailView):
+class WorkerDetailView(LoginRequiredMixin, generic.DetailView):
     model = Worker
 
 
-class WorkerCreateView(generic.CreateView):
-    model = Worker
-    form_class = WorkerCreationForm
-    success_url = reverse_lazy("project:worker-list")
-
-
-class WorkerUpdateView(generic.UpdateView):
+class WorkerCreateView(LoginRequiredMixin, generic.CreateView):
     model = Worker
     form_class = WorkerCreationForm
     success_url = reverse_lazy("project:worker-list")
 
 
-class WorkerDeleteView(generic.DeleteView):
+class WorkerUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = Worker
+    form_class = WorkerCreationForm
+    success_url = reverse_lazy("project:worker-list")
+
+
+class WorkerDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = Worker
     success_url = reverse_lazy("project:worker-list")
 
 
-class ProjectListView(generic.ListView):
+class ProjectListView(LoginRequiredMixin, generic.ListView):
     model = Project
     queryset = Project.objects.all()
     paginate_by = 5
@@ -261,28 +262,28 @@ class ProjectListView(generic.ListView):
         return self.queryset
 
 
-class ProjectDetailView(generic.DetailView):
+class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
     model = Project
 
 
-class ProjectCreateView(generic.CreateView):
-    model = Project
-    form_class = ProjectForm
-    success_url = reverse_lazy("project:project-list")
-
-
-class ProjectUpdateView(generic.UpdateView):
+class ProjectCreateView(LoginRequiredMixin, generic.CreateView):
     model = Project
     form_class = ProjectForm
     success_url = reverse_lazy("project:project-list")
 
 
-class ProjectDeleteView(generic.DeleteView):
+class ProjectUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = Project
+    form_class = ProjectForm
+    success_url = reverse_lazy("project:project-list")
+
+
+class ProjectDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = Project
     success_url = reverse_lazy("project:project-list")
 
 
-class TeamListView(generic.ListView):
+class TeamListView(LoginRequiredMixin, generic.ListView):
     model = Team
     queryset = Team.objects.all()
     paginate_by = 5
@@ -304,23 +305,23 @@ class TeamListView(generic.ListView):
         return self.queryset
 
 
-class TeamDetailView(generic.DetailView):
+class TeamDetailView(LoginRequiredMixin, generic.DetailView):
     model = Team
 
 
-class TeamCreateView(generic.CreateView):
-    model = Team
-    form_class = TeamForm
-    success_url = reverse_lazy("project:team-list")
-
-
-class TeamUpdateView(generic.UpdateView):
+class TeamCreateView(LoginRequiredMixin, generic.CreateView):
     model = Team
     form_class = TeamForm
     success_url = reverse_lazy("project:team-list")
 
 
-class TeamDeleteView(generic.DeleteView):
+class TeamUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = Team
+    form_class = TeamForm
+    success_url = reverse_lazy("project:team-list")
+
+
+class TeamDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = Team
     success_url = reverse_lazy("project:team-list")
 

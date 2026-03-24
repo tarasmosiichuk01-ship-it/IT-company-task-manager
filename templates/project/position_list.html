@@ -36,7 +36,9 @@
           {{ position.id }}
         </td>
         <td>
-          {{ position.name }}
+          <a href="{% url 'project:position-detail' pk=position.id %}">
+            {{ position.name }}
+          </a>
         </td>
         <td>
           <a class="btn btn-primary link-to-page"

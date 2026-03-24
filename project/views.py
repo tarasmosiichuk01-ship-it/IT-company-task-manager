@@ -27,6 +27,8 @@ def index(request: HttpRequest) -> HttpResponse:
     num_workers = Worker.objects.count()
     num_tasks = Task.objects.count()
     num_positions = Position.objects.count()
+    num_projects = Project.objects.count()
+    num_teams = Team.objects.count()
 
     num_visits = request.session.get("num_visits", 0)
     request.session["num_visits"] = num_visits + 1
@@ -35,6 +37,8 @@ def index(request: HttpRequest) -> HttpResponse:
         "num_workers": num_workers,
         "num_tasks": num_tasks,
         "num_positions": num_positions,
+        "num_projects": num_projects,
+        "num_teams": num_teams,
         "num_visits": num_visits,
     }
     return render(request, "project/index.html", context=context)
@@ -85,6 +89,10 @@ class PositionListView(generic.ListView):
         if form.is_valid():
             return self.queryset.filter(name__icontains=form.cleaned_data["name"])
         return self.queryset
+
+
+class PositionDetailView(generic.DetailView):
+    model = Position
 
 
 class PositionCreateView(generic.CreateView):

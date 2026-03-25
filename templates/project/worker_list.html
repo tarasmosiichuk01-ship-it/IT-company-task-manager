@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% load crispy_forms_filters %}
 
+{% block title %}Workers | IT Task Manager{% endblock %}
+
 {% block content %}
   <h1>
     Worker list
@@ -64,4 +66,7 @@
   {% else %}
     <p>There are no workers in company</p>
   {% endif %}
+  {% block pagination %}
+    {% include "includes/pagination.html" %}
+  {% endblock %}
 {% endblock %}

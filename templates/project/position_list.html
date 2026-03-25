@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% load crispy_forms_filters %}
 
+{% block title %}Positions | IT Task Manager{% endblock %}
+
 {% block content %}
   <h1>
     Position list
@@ -48,9 +50,14 @@
         </td>
       </tr>
     {% endfor %}
-
    </table>
   {% else %}
     <p>There are no positions in company</p>
   {% endif %}
+
+  {% block pagination %}
+    {% include "includes/pagination.html" %}
+  {% endblock %}
+
 {% endblock %}
+

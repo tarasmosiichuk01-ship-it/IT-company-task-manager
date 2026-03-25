@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% load crispy_forms_filters %}
 
+{% block title %}Teams | IT Task Manager{% endblock %}
+
 {% block content %}
   <h1>
     Team list
@@ -60,4 +62,7 @@
   {% else %}
     <p>There are no teams in company</p>
   {% endif %}
+  {% block pagination %}
+    {% include "includes/pagination.html" %}
+  {% endblock %}
 {% endblock %}

@@ -159,6 +159,7 @@ class TaskTypeDeleteView(LoginRequiredMixin, generic.DeleteView):
 class TaskListView(LoginRequiredMixin, generic.ListView):
     model = Task
     paginate_by = 5
+    context_object_name = "task_list"
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(TaskListView, self).get_context_data(**kwargs)
@@ -251,6 +252,7 @@ class WorkerDeleteView(LoginRequiredMixin, generic.DeleteView):
 class ProjectListView(LoginRequiredMixin, generic.ListView):
     model = Project
     paginate_by = 5
+    context_object_name = "project_list"
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(ProjectListView, self).get_context_data(**kwargs)
@@ -296,6 +298,7 @@ class ProjectDeleteView(LoginRequiredMixin, generic.DeleteView):
 class TeamListView(LoginRequiredMixin, generic.ListView):
     model = Team
     paginate_by = 5
+    context_object_name = "team_list"
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(TeamListView, self).get_context_data(**kwargs)
@@ -337,10 +340,11 @@ class TeamDeleteView(LoginRequiredMixin, generic.DeleteView):
 
 @login_required
 def toggle_assign_to_task(request, pk):
-    task = get_object_or_404(Task, pk=pk)
-    worker = request.user
-    if task in worker.tasks.all():
-        worker.tasks.remove(task)
-    else:
-        worker.tasks.add(task)
+    if request.method == "POST":
+        task = get_object_or_404(Task, pk=pk)
+        worker = request.user
+        if task in worker.tasks.all():
+            worker.tasks.remove(task)
+        else:
+            worker.tasks.add(task)
     return HttpResponseRedirect(reverse_lazy("project:task-detail", args=[pk]))

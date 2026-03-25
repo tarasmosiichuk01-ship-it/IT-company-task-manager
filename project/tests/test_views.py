@@ -15,27 +15,27 @@ TEAM_URL = reverse("project:team-list")
 class PublicTests(TestCase):
     def test_login_required_position(self):
         response = self.client.get(POSITION_URL)
-        self.assertNotEqual(response.status_code, 200)
+        self.assertRedirects(response, f"/accounts/login/?next={POSITION_URL}")
 
     def test_login_required_task_type(self):
         response = self.client.get(TASKTYPE_URL)
-        self.assertNotEqual(response.status_code, 200)
+        self.assertRedirects(response, f"/accounts/login/?next={TASKTYPE_URL}")
 
     def test_login_required_task(self):
         response = self.client.get(TASK_URL)
-        self.assertNotEqual(response.status_code, 200)
+        self.assertRedirects(response, f"/accounts/login/?next={TASK_URL}")
 
     def test_login_required_worker(self):
         response = self.client.get(WORKER_URL)
-        self.assertNotEqual(response.status_code, 200)
+        self.assertRedirects(response, f"/accounts/login/?next={WORKER_URL}")
 
     def test_login_required_project(self):
         response = self.client.get(PROJECT_URL)
-        self.assertNotEqual(response.status_code, 200)
+        self.assertRedirects(response, f"/accounts/login/?next={PROJECT_URL}")
 
     def test_login_required_team(self):
         response = self.client.get(TEAM_URL)
-        self.assertNotEqual(response.status_code, 200)
+        self.assertRedirects(response, f"/accounts/login/?next={TEAM_URL}")
 
 
 class PrivateTests(TestCase):
@@ -109,15 +109,50 @@ class PrivateTests(TestCase):
         self.assertEqual(list(response.context["team_list"]), list(teams))
         self.assertTemplateUsed(response, "project/team_list.html")
 
+    def test_toggle_assign_to_task(self):
+        task_type = TaskType.objects.create(name="Bug")
+        task = Task.objects.create(name="Test", task_type=task_type)
 
-class PositionSearchTest(TestCase):
-    def setUp(self) -> None:
+        self.client.post(reverse("project:toggle-task-assign", args=[task.pk]))
+        self.assertIn(task, self.user.tasks.all())
+
+        self.client.post(reverse("project:toggle-task-assign", args=[task.pk]))
+        self.assertNotIn(task, self.user.tasks.all())
+
+    def test_task_detail_view(self):
+        task_type = TaskType.objects.create(name="Bug")
+        task = Task.objects.create(name="Test", task_type=task_type)
+        response = self.client.get(
+            reverse("project:task-detail", args=[task.pk])
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_task_delete(self):
+        task_type = TaskType.objects.create(name="Bug")
+        task = Task.objects.create(name="Test", task_type=task_type)
+        self.client.post(reverse("project:task-delete", args=[task.pk]))
+        self.assertFalse(Task.objects.filter(pk=task.pk).exists())
+
+    def test_position_create(self):
+        self.client.post(
+            reverse("project:position-create"),
+            data={"name": "DevOps"}
+        )
+        self.assertTrue(Position.objects.filter(name="DevOps").exists())
+
+
+class BaseAuthenticatedTest(TestCase):
+    def setUp(self):
         self.user = get_user_model().objects.create_user(
-            username="john_parar",
-            password="user123",
+            username="test_user",
+            password="test123",
         )
         self.client.force_login(self.user)
 
+
+class PositionSearchTest(BaseAuthenticatedTest):
+    def setUp(self):
+        super().setUp()
         self.position_1 = Position.objects.create(name="Developer")
         self.position_2 = Position.objects.create(name="Designer")
 
@@ -142,14 +177,9 @@ class PositionSearchTest(TestCase):
             len(Position.objects.all())
         )
 
-class TaskTypeSearchTest(TestCase):
-    def setUp(self) -> None:
-        self.user = get_user_model().objects.create_user(
-            username="jack_oll",
-            password="user123",
-        )
-        self.client.force_login(self.user)
-
+class TaskTypeSearchTest(BaseAuthenticatedTest):
+    def setUp(self):
+        super().setUp()
         self.task_type_1 = TaskType.objects.create(name="Fix bug")
         self.task_type_2 = TaskType.objects.create(name="New feature")
 
@@ -175,14 +205,9 @@ class TaskTypeSearchTest(TestCase):
         )
 
 
-class TaskSearchTest(TestCase):
-    def setUp(self) -> None:
-        self.user = get_user_model().objects.create_user(
-            username="nick_sinny",
-            password="user123",
-        )
-        self.client.force_login(self.user)
-
+class TaskSearchTest(BaseAuthenticatedTest):
+    def setUp(self):
+        super().setUp()
         self.task_1 = Task.objects.create(
             name="Test task one",
             task_type=TaskType.objects.create(name="Fix bug")
@@ -214,18 +239,13 @@ class TaskSearchTest(TestCase):
         )
 
 
-class WorkerSearchTest(TestCase):
-    def setUp(self) -> None:
-        self.user = get_user_model().objects.create_user(
-            username="john_stone",
-            password="test123",
-            position = Position.objects.create(name="Developer")
-        )
-        self.client.force_login(self.user)
+class WorkerSearchTest(BaseAuthenticatedTest):
+    def setUp(self):
+        super().setUp()
         self.worker_1 = get_user_model().objects.create_user(
             username="molly_sting",
             password="test123",
-            position = Position.objects.create(name="Designer")
+            position=Position.objects.create(name="Designer")
         )
         self.worker_2 = get_user_model().objects.create_user(
             username="bob_yellow",
@@ -255,13 +275,9 @@ class WorkerSearchTest(TestCase):
         )
 
 
-class ProjectSearchTest(TestCase):
-    def setUp(self) -> None:
-        self.user = get_user_model().objects.create_user(
-            username="ann_otto",
-            password="user123",
-        )
-        self.client.force_login(self.user)
+class ProjectSearchTest(BaseAuthenticatedTest):
+    def setUp(self):
+        super().setUp()
 
         self.project_1 = Project.objects.create(
             name="Test project one"
@@ -292,14 +308,9 @@ class ProjectSearchTest(TestCase):
         )
 
 
-class TeamSearchTest(TestCase):
-    def setUp(self) -> None:
-        self.user = get_user_model().objects.create_user(
-            username="brad_nilson",
-            password="user123",
-        )
-        self.client.force_login(self.user)
-
+class TeamSearchTest(BaseAuthenticatedTest):
+    def setUp(self):
+        super().setUp()
         self.team_1 = Team.objects.create(
             name="Test team one"
         )

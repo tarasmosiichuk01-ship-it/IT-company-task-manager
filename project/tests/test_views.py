@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from project.models import Position, TaskType, Task, Project, Team, Worker
+from project.models import Position, TaskType, Task, Project, Team
 
 POSITION_URL = reverse("project:position-list")
 TASKTYPE_URL = reverse("project:task-type-list")
@@ -65,8 +65,12 @@ class PrivateTests(TestCase):
         self.assertTemplateUsed(response, "project/task_type_list.html")
 
     def test_retrieve_tasks(self):
-        Task.objects.create(name="Test task one", task_type=TaskType.objects.create(name="Fix bug"))
-        Task.objects.create(name="Test task two", task_type=TaskType.objects.create(name="New feature"))
+        Task.objects.create(
+            name="Test task one", task_type=TaskType.objects.create(name="Fix bug")
+        )
+        Task.objects.create(
+            name="Test task two", task_type=TaskType.objects.create(name="New feature")
+        )
         response = self.client.get(TASK_URL)
         self.assertEqual(response.status_code, 200)
         tasks = Task.objects.all()
@@ -84,9 +88,7 @@ class PrivateTests(TestCase):
             "position": position.id,
         }
         self.client.post(reverse("project:worker-create"), data=form_data)
-        new_user = get_user_model().objects.get(
-            username=form_data["username"]
-        )
+        new_user = get_user_model().objects.get(username=form_data["username"])
         self.assertEqual(new_user.first_name, form_data["first_name"])
         self.assertEqual(new_user.last_name, form_data["last_name"])
         self.assertEqual(new_user.position.id, form_data["position"])
@@ -122,9 +124,7 @@ class PrivateTests(TestCase):
     def test_task_detail_view(self):
         task_type = TaskType.objects.create(name="Bug")
         task = Task.objects.create(name="Test", task_type=task_type)
-        response = self.client.get(
-            reverse("project:task-detail", args=[task.pk])
-        )
+        response = self.client.get(reverse("project:task-detail", args=[task.pk]))
         self.assertEqual(response.status_code, 200)
 
     def test_task_delete(self):
@@ -134,10 +134,7 @@ class PrivateTests(TestCase):
         self.assertFalse(Task.objects.filter(pk=task.pk).exists())
 
     def test_position_create(self):
-        self.client.post(
-            reverse("project:position-create"),
-            data={"name": "DevOps"}
-        )
+        self.client.post(reverse("project:position-create"), data={"name": "DevOps"})
         self.assertTrue(Position.objects.filter(name="DevOps").exists())
 
 
@@ -165,17 +162,16 @@ class PositionSearchTest(BaseAuthenticatedTest):
 
     def test_search_excludes_other_positions(self):
         response = self.client.get(
-            reverse("project:position-list"),
-            data={"name": self.position_1.name}
+            reverse("project:position-list"), data={"name": self.position_1.name}
         )
         self.assertNotContains(response, self.position_2.name)
 
     def test_empty_search_returns_all_positions(self):
         response = self.client.get(reverse("project:position-list"))
         self.assertEqual(
-            len(response.context["position_list"]),
-            len(Position.objects.all())
+            len(response.context["position_list"]), len(Position.objects.all())
         )
+
 
 class TaskTypeSearchTest(BaseAuthenticatedTest):
     def setUp(self):
@@ -192,16 +188,14 @@ class TaskTypeSearchTest(BaseAuthenticatedTest):
 
     def test_search_excludes_other_task_types(self):
         response = self.client.get(
-            reverse("project:task-type-list"),
-            data={"name": self.task_type_1.name}
+            reverse("project:task-type-list"), data={"name": self.task_type_1.name}
         )
         self.assertNotContains(response, self.task_type_2.name)
 
     def test_empty_search_returns_all_task_types(self):
         response = self.client.get(reverse("project:task-type-list"))
         self.assertEqual(
-            len(response.context["task_type_list"]),
-            len(TaskType.objects.all())
+            len(response.context["task_type_list"]), len(TaskType.objects.all())
         )
 
 
@@ -209,12 +203,10 @@ class TaskSearchTest(BaseAuthenticatedTest):
     def setUp(self):
         super().setUp()
         self.task_1 = Task.objects.create(
-            name="Test task one",
-            task_type=TaskType.objects.create(name="Fix bug")
+            name="Test task one", task_type=TaskType.objects.create(name="Fix bug")
         )
         self.task_2 = Task.objects.create(
-            name="Test task two",
-            task_type=TaskType.objects.create(name="New feature")
+            name="Test task two", task_type=TaskType.objects.create(name="New feature")
         )
 
     def test_search_finds_correct_tasks(self):
@@ -226,17 +218,13 @@ class TaskSearchTest(BaseAuthenticatedTest):
 
     def test_search_excludes_other_tasks(self):
         response = self.client.get(
-            reverse("project:task-list"),
-            data={"name": self.task_1.name}
+            reverse("project:task-list"), data={"name": self.task_1.name}
         )
         self.assertNotContains(response, self.task_2.name)
 
     def test_empty_search_returns_all_tasks(self):
         response = self.client.get(reverse("project:task-list"))
-        self.assertEqual(
-            len(response.context["task_list"]),
-            len(Task.objects.all())
-        )
+        self.assertEqual(len(response.context["task_list"]), len(Task.objects.all()))
 
 
 class WorkerSearchTest(BaseAuthenticatedTest):
@@ -245,33 +233,30 @@ class WorkerSearchTest(BaseAuthenticatedTest):
         self.worker_1 = get_user_model().objects.create_user(
             username="molly_sting",
             password="test123",
-            position=Position.objects.create(name="Designer")
+            position=Position.objects.create(name="Designer"),
         )
         self.worker_2 = get_user_model().objects.create_user(
             username="bob_yellow",
             password="test123",
-            position=Position.objects.create(name="Project manager")
+            position=Position.objects.create(name="Project manager"),
         )
 
     def test_search_finds_correct_worker(self):
         response = self.client.get(
-            reverse("project:worker-list"),
-            data={"username": self.worker_1.username}
+            reverse("project:worker-list"), data={"username": self.worker_1.username}
         )
         self.assertContains(response, self.worker_1.username)
 
     def test_search_excludes_other_workers(self):
         response = self.client.get(
-            reverse("project:worker-list"),
-            data={"username": self.worker_1.username}
+            reverse("project:worker-list"), data={"username": self.worker_1.username}
         )
         self.assertNotContains(response, self.worker_2.username)
 
     def test_empty_search_returns_all_workers(self):
         response = self.client.get(reverse("project:worker-list"))
         self.assertEqual(
-            len(response.context["worker_list"]),
-            len(get_user_model().objects.all())
+            len(response.context["worker_list"]), len(get_user_model().objects.all())
         )
 
 
@@ -279,12 +264,8 @@ class ProjectSearchTest(BaseAuthenticatedTest):
     def setUp(self):
         super().setUp()
 
-        self.project_1 = Project.objects.create(
-            name="Test project one"
-        )
-        self.project_2 = Project.objects.create(
-            name="Test project two"
-        )
+        self.project_1 = Project.objects.create(name="Test project one")
+        self.project_2 = Project.objects.create(name="Test project two")
 
     def test_search_finds_correct_projects(self):
         response = self.client.get(
@@ -295,28 +276,22 @@ class ProjectSearchTest(BaseAuthenticatedTest):
 
     def test_search_excludes_other_projects(self):
         response = self.client.get(
-            reverse("project:project-list"),
-            data={"name": self.project_1.name}
+            reverse("project:project-list"), data={"name": self.project_1.name}
         )
         self.assertNotContains(response, self.project_2.name)
 
     def test_empty_search_returns_all_projects(self):
         response = self.client.get(reverse("project:project-list"))
         self.assertEqual(
-            len(response.context["project_list"]),
-            len(Project.objects.all())
+            len(response.context["project_list"]), len(Project.objects.all())
         )
 
 
 class TeamSearchTest(BaseAuthenticatedTest):
     def setUp(self):
         super().setUp()
-        self.team_1 = Team.objects.create(
-            name="Test team one"
-        )
-        self.team_2 = Team.objects.create(
-            name="Test team two"
-        )
+        self.team_1 = Team.objects.create(name="Test team one")
+        self.team_2 = Team.objects.create(name="Test team two")
 
     def test_search_finds_correct_teams(self):
         response = self.client.get(
@@ -327,14 +302,10 @@ class TeamSearchTest(BaseAuthenticatedTest):
 
     def test_search_excludes_other_teams(self):
         response = self.client.get(
-            reverse("project:team-list"),
-            data={"name": self.team_1.name}
+            reverse("project:team-list"), data={"name": self.team_1.name}
         )
         self.assertNotContains(response, self.team_2.name)
 
     def test_empty_search_returns_all_teams(self):
         response = self.client.get(reverse("project:team-list"))
-        self.assertEqual(
-            len(response.context["team_list"]),
-            len(Team.objects.all())
-        )
+        self.assertEqual(len(response.context["team_list"]), len(Team.objects.all()))

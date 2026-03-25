@@ -20,10 +20,7 @@ class ModelTests(TestCase):
             first_name="John",
             last_name="Woody",
         )
-        self.assertEqual(
-            str(worker),
-            f"{worker.username} ({worker.get_full_name()})"
-        )
+        self.assertEqual(str(worker), f"{worker.username} ({worker.get_full_name()})")
 
     def test_create_worker_with_position(self):
         username = "jack_stone"
@@ -40,10 +37,7 @@ class ModelTests(TestCase):
 
     def test_task_str(self):
         task_type = TaskType.objects.create(name="Bug")
-        task = Task.objects.create(
-            name="test",
-            task_type=task_type
-        )
+        task = Task.objects.create(name="test", task_type=task_type)
         self.assertEqual(str(task), task.name)
 
     def test_project_str(self):

@@ -32,7 +32,7 @@ class Worker(AbstractUser):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="workers"
+        related_name="workers",
     )
 
     class Meta:
@@ -65,21 +65,17 @@ class Task(models.Model):
         default=Priority.MEDIUM,
     )
     task_type = models.ForeignKey(
-        TaskType,
-        on_delete=models.PROTECT,
-        related_name="tasks"
+        TaskType, on_delete=models.PROTECT, related_name="tasks"
     )
     assignees = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        related_name="tasks",
-        blank=True
+        settings.AUTH_USER_MODEL, related_name="tasks", blank=True
     )
     project = models.ForeignKey(
         "Project",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="tasks"
+        related_name="tasks",
     )
 
     class Meta:

@@ -6,7 +6,7 @@ from project.models import Position, TaskType
 
 class FormsTests(TestCase):
     def test_worker_creation_form_with_position_first_last_name_is_valid(self):
-        position = Position.objects.create(name = "Test Position")
+        position = Position.objects.create(name="Test Position")
         form_data = {
             "username": "new_user",
             "password1": "user12test",
@@ -48,5 +48,6 @@ class FormsTests(TestCase):
 
     def test_name_search_form_empty_is_valid(self):
         from project.forms import NameSearchForm
+
         form = NameSearchForm(data={"name": ""})
         self.assertTrue(form.is_valid())

@@ -19,13 +19,11 @@ class TaskTypeAdmin(admin.ModelAdmin):
 
 @admin.register(Worker)
 class WorkerAdmin(UserAdmin):
-    list_display = UserAdmin.list_display + ("position", )
+    list_display = UserAdmin.list_display + ("position",)
     search_fields = ("username", "first_name", "last_name")
-    list_filter = ("position", )
-    ordering = ("username", )
-    fieldsets = UserAdmin.fieldsets + (
-        ("Additional info", {"fields": ("position",)}),
-    )
+    list_filter = ("position",)
+    ordering = ("username",)
+    fieldsets = UserAdmin.fieldsets + (("Additional info", {"fields": ("position",)}),)
     add_fieldsets = UserAdmin.add_fieldsets + (
         (
             "Additional info",
@@ -42,13 +40,7 @@ class WorkerAdmin(UserAdmin):
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = [
-        "name",
-        "priority",
-        "task_type",
-        "deadline",
-        "is_completed"
-    ]
+    list_display = ["name", "priority", "task_type", "deadline", "is_completed"]
     search_fields = ["name", "description"]
     list_filter = ["priority", "task_type", "is_completed"]
     filter_horizontal = ["assignees"]

@@ -14,7 +14,7 @@ class ModelTests(TestCase):
         self.assertEqual(str(task_type), task_type.name)
 
     def test_worker_str(self):
-        worker = Worker.objects.create(
+        worker = Worker.objects.create_user(
             username="john_woody",
             password="test123",
             first_name="John",
@@ -22,7 +22,7 @@ class ModelTests(TestCase):
         )
         self.assertEqual(
             str(worker),
-            f"{worker.username} ({worker.first_name} {worker.last_name})"
+            f"{worker.username} ({worker.get_full_name()})"
         )
 
     def test_create_worker_with_position(self):
@@ -53,3 +53,21 @@ class ModelTests(TestCase):
     def test_team_str(self):
         team = Team.objects.create(name="test")
         self.assertEqual(str(team), team.name)
+
+    def test_worker_str_without_full_name(self):
+        worker = Worker.objects.create_user(username="noname", password="test123")
+        self.assertEqual(str(worker), "noname")  # має повертати лише username
+
+    def test_worker_get_absolute_url(self):
+        worker = Worker.objects.create_user(username="test", password="test123")
+        self.assertEqual(worker.get_absolute_url(), f"/workers/{worker.pk}/")
+
+    def test_task_default_priority(self):
+        task_type = TaskType.objects.create(name="Bug")
+        task = Task.objects.create(name="test", task_type=task_type)
+        self.assertEqual(task.priority, Task.Priority.MEDIUM)
+
+    def test_task_default_is_completed(self):
+        task_type = TaskType.objects.create(name="Bug")
+        task = Task.objects.create(name="test", task_type=task_type)
+        self.assertFalse(task.is_completed)

@@ -45,6 +45,16 @@ class AdminSiteTests(TestCase):
         """
         url = reverse("admin:project_worker_add")
         response = self.client.get(url)
-        self.assertContains(response, self.worker.first_name)
-        self.assertContains(response, self.worker.last_name)
-        self.assertContains(response, self.worker.position)
+        self.assertContains(response, "first_name")  # поле присутнє в формі
+        self.assertContains(response, "last_name")
+        self.assertContains(response, "position")
+
+    def test_task_listed(self):
+        url = reverse("admin:project_task_changelist")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_position_listed(self):
+        url = reverse("admin:project_position_changelist")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)

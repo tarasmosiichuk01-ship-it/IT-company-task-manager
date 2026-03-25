@@ -30,6 +30,7 @@
     <tr>
       <th>ID</th>
       <th>Task Type</th>
+      <th>Update task type</th>
       <th>Delete task type</th>
     </tr>
     {% for type in task_type_list %}
@@ -40,6 +41,12 @@
         <td>
           <a href="{% url 'project:task-type-detail' pk=type.id %}">
           {{ type.name }}
+          </a>
+        </td>
+        <td>
+          <a class="btn btn-secondary link-to-page"
+             href="{% url 'project:task-type-update' pk=type.id %}">
+            Update
           </a>
         </td>
         <td>

@@ -1,6 +1,6 @@
 from django.urls import path
 from project.views import (
-    index,
+    IndexView,
     PositionListView,
     PositionCreateView,
     PositionDetailView,
@@ -16,7 +16,7 @@ from project.views import (
     TaskDetailView,
     TaskUpdateView,
     TaskDeleteView,
-    toggle_assign_to_task,
+    ToggleAssignToTaskView,
     WorkerListView,
     WorkerCreateView,
     WorkerDetailView,
@@ -37,7 +37,7 @@ from project.views import (
 app_name = "project"
 
 urlpatterns = [
-    path("", index, name="index"),
+    path("", IndexView.as_view(), name="index"),
     path("positions/", PositionListView.as_view(), name="position-list"),
     path("positions/create/", PositionCreateView.as_view(), name="position-create"),
     path("positions/<int:pk>/", PositionDetailView.as_view(), name="position-detail"),
@@ -71,7 +71,7 @@ urlpatterns = [
     path("tasks/<int:pk>/delete/", TaskDeleteView.as_view(), name="task-delete"),
     path(
         "tasks/<int:pk>/toggle-assign/",
-        toggle_assign_to_task,
+        ToggleAssignToTaskView.as_view(),
         name="toggle-task-assign",
     ),
     path("workers/", WorkerListView.as_view(), name="worker-list"),

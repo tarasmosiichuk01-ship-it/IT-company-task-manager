@@ -1,8 +1,7 @@
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views import generic
 
@@ -22,54 +21,48 @@ from project.forms import (
 )
 from project.models import Worker, Task, Position, TaskType, Project, Team
 
+class IndexView(LoginRequiredMixin, generic.TemplateView):
+    template_name = "project/index.html"
 
-@login_required
-def index(request: HttpRequest) -> HttpResponse:
-    """View function for the home page of the site."""
-    num_workers = Worker.objects.count()
-    num_tasks = Task.objects.count()
-    num_positions = Position.objects.count()
-    num_projects = Project.objects.count()
-    num_teams = Team.objects.count()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
-    num_visits = request.session.get("num_visits", 0)
-    request.session["num_visits"] = num_visits + 1
+        num_visits = self.request.session.get("num_visits", 0)
+        self.request.session["num_visits"] = num_visits + 1
 
-    context = {
-        "num_workers": num_workers,
-        "num_tasks": num_tasks,
-        "num_positions": num_positions,
-        "num_projects": num_projects,
-        "num_teams": num_teams,
-        "num_visits": num_visits,
-    }
-    return render(request, "project/index.html", context=context)
+        context["num_workers"] = Worker.objects.count()
+        context["num_tasks"] = Task.objects.count()
+        context["num_positions"] = Position.objects.count()
+        context["num_projects"] = Project.objects.count()
+        context["num_teams"] = Team.objects.count()
+        context["num_visits"] = num_visits
+        return context
 
 
-def register_user(request):
-    msg = None
-    success = False
+class RegisterView(generic.FormView):
+    template_name = "registration/register.html"
+    form_class = SignUpForm
+    success_url = reverse_lazy("project:index")
 
-    if request.method == "POST":
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get("username")
-            raw_password = form.cleaned_data.get("password1")
-            user = authenticate(username=username, password=raw_password)
-            if user:
-                login(request, user)
-            return redirect("project:index")
-        else:
-            msg = "Form is not valid"
-    else:
-        form = SignUpForm()
+    def form_valid(self, form):
+        form.save()
+        username = form.cleaned_data.get("username")
+        raw_password = form.cleaned_data.get("password1")
+        user = authenticate(username=username, password=raw_password)
+        if user:
+            login(self.request, user)
+        return super().form_valid(form)
 
-    return render(
-        request,
-        "registration/register.html",
-        {"form": form, "msg": msg, "success": success},
-    )
+    def form_invalid(self, form):
+        return self.render_to_response(
+            self.get_context_data(form=form, msg="Form is not valid", success=False)
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.setdefault("msg", None)
+        context.setdefault("success", False)
+        return context
 
 
 class PositionListView(LoginRequiredMixin, generic.ListView):
@@ -334,12 +327,12 @@ class TeamDeleteView(LoginRequiredMixin, generic.DeleteView):
     success_url = reverse_lazy("project:team-list")
 
 
-@login_required
-def toggle_assign_to_task(request, pk):
-    task = get_object_or_404(Task, pk=pk)
-    worker = request.user
-    if task in worker.tasks.all():
-        worker.tasks.remove(task)
-    else:
-        worker.tasks.add(task)
-    return HttpResponseRedirect(reverse_lazy("project:task-detail", args=[pk]))
+class ToggleAssignToTaskView(LoginRequiredMixin, generic.View):
+    def post(self, request, pk):
+        task = get_object_or_404(Task, pk=pk)
+        worker = request.user
+        if task in worker.tasks.all():
+            worker.tasks.remove(task)
+        else:
+            worker.tasks.add(task)
+        return HttpResponseRedirect(reverse_lazy("project:task-detail", args=[pk]))

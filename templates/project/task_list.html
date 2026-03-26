@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load crispy_forms_filters %}
+
+{% block title %}Tasks | IT Task Manager{% endblock %}
+
+{% block content %}
+  <h1>
+    Task list
+    <a href="{% url 'project:task-create' %}" class="btn btn-primary link-to-page mb-2">
+      Create
+    </a>
+  </h1>
+  <form method="get" action="">
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <input
+            type="text"
+            name="name"
+            value="{{ name }}"
+            placeholder="Search by name..."
+            style="border: 1px solid #ccc; border-radius: 8px; padding: 8px 12px; font-size: 14px; outline: none; width: 250px;"
+        >
+        <button class="btn btn-secondary mb-1" >
+            🔎
+        </button>
+    </div>
+</form>
+
+  {% if task_list %}
+   <table class="table">
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Is completed</th>
+      <th>Update task</th>
+      <th>Delete task</th>
+    </tr>
+    {% for task in task_list %}
+      <tr>
+        <td>
+          {{ task.id }}
+        </td>
+        <td>
+          <a href="{% url 'project:task-detail' pk=task.id %}">
+            {{ task.name }}
+          </a>
+        </td>
+        <td>
+          {{ task.is_completed|yesno:"✅ Yes,❌ No" }}
+        </td>
+        <td>
+          <a class="btn btn-secondary link-to-page"
+              href="{% url 'project:task-update' pk=task.id %}">
+            Update
+          </a>
+        </td>
+        <td>
+          <a class="btn btn-primary link-to-page"
+             href="{% url 'project:task-delete' pk=task.id%}">
+            Delete
+          </a>
+        </td>
+      </tr>
+    {% endfor %}
+
+   </table>
+  {% else %}
+    <p>There are no tasks in company</p>
+  {% endif %}
+  {% block pagination %}
+    {% include "includes/pagination.html" %}
+  {% endblock %}
+{% endblock %}

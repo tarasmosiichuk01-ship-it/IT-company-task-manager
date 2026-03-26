@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load crispy_forms_filters %}
+
+{% block title %}Teams | IT Task Manager{% endblock %}
+
+{% block content %}
+  <h1>
+    Team list
+    <a href="{% url 'project:team-create' %}" class="btn btn-primary link-to-page mb-2">
+      Create
+    </a>
+  </h1>
+  <form method="get" action="">
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <input
+            type="text"
+            name="name"
+            value="{{ name }}"
+            placeholder="Search by name..."
+            style="border: 1px solid #ccc; border-radius: 8px; padding: 8px 12px; font-size: 14px; outline: none; width: 250px;"
+        >
+        <button class="btn btn-secondary mb-1" >
+            🔎
+        </button>
+    </div>
+</form>
+
+  {% if team_list %}
+   <table class="table">
+    <tr>
+      <th>ID</th>
+      <th>Team</th>
+      <th>Update team</th>
+      <th>Delete team</th>
+    </tr>
+    {% for team in team_list %}
+      <tr>
+        <td>
+          {{ team.id }}
+        </td>
+        <td>
+          <a href="{% url 'project:team-detail' pk=team.id %}">
+          {{ team.name }}
+          </a>
+        </td>
+        <td>
+          <a class="btn btn-secondary link-to-page"
+             href="{% url 'project:team-update' pk=team.id %}">
+            Update
+          </a>
+        </td>
+        <td>
+          <a class="btn btn-primary link-to-page"
+             href="{% url 'project:team-delete' pk=team.id %}">
+            Delete
+          </a>
+        </td>
+      </tr>
+    {% endfor %}
+
+   </table>
+  {% else %}
+    <p>There are no teams in company</p>
+  {% endif %}
+  {% block pagination %}
+    {% include "includes/pagination.html" %}
+  {% endblock %}
+{% endblock %}

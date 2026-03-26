@@ -1,0 +1,28 @@
+{% load query_transform %}
+{% if is_paginated %}
+  <ul class="pagination mt-3" style="list-style: none; padding: 0; display: flex; align-items: center;">
+    {% if page_obj.has_previous %}
+      <li>
+        <a href="?{% query_transform request page=page_obj.previous_page_number %}"
+           style="padding: 8px 16px; border: 1px solid #ccc; border-radius: 8px; text-decoration: none; color: #333;">
+          prev
+        </a>
+      </li>
+    {% endif %}
+
+    <li>
+      <span style="padding: 8px 16px; background: #0d6efd; color: white; border-radius: 8px; font-weight: 600;">
+        {{ page_obj.number }} of {{ paginator.num_pages }}
+      </span>
+    </li>
+
+    {% if page_obj.has_next %}
+      <li>
+        <a href="?{% query_transform request page=page_obj.next_page_number %}"
+           style="padding: 8px 16px; border: 1px solid #ccc; border-radius: 8px; text-decoration: none; color: #333;">
+          next
+        </a>
+      </li>
+    {% endif %}
+  </ul>
+{% endif %}

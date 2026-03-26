@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load crispy_forms_filters %}
+
+{% block title %}Positions | IT Task Manager{% endblock %}
+
+{% block content %}
+  <h1>
+    Position list
+    <a href="{% url 'project:position-create' %}" class="btn btn-primary link-to-page mb-2">
+      Create
+    </a>
+  </h1>
+  <form method="get" action="">
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <input
+            type="text"
+            name="name"
+            value="{{ name }}"
+            placeholder="Search by name..."
+            style="border: 1px solid #ccc; border-radius: 8px; padding: 8px 12px; font-size: 14px; outline: none; width: 250px;"
+        >
+        <button class="btn btn-secondary mb-1" >
+            🔎
+        </button>
+    </div>
+</form>
+
+  {% if position_list %}
+   <table class="table">
+    <tr>
+      <th>ID</th>
+      <th>Position</th>
+      <th>Delete position</th>
+    </tr>
+    {% for position in position_list %}
+      <tr>
+        <td>
+          {{ position.id }}
+        </td>
+        <td>
+          <a href="{% url 'project:position-detail' pk=position.id %}">
+            {{ position.name }}
+          </a>
+        </td>
+        <td>
+          <a class="btn btn-primary link-to-page"
+             href="{% url 'project:position-delete' pk=position.id%}">
+            Delete
+          </a>
+        </td>
+      </tr>
+    {% endfor %}
+   </table>
+  {% else %}
+    <p>There are no positions in company</p>
+  {% endif %}
+
+  {% block pagination %}
+    {% include "includes/pagination.html" %}
+  {% endblock %}
+
+{% endblock %}
+

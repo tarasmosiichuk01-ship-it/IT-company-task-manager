@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+
+{% block title %}Workers | IT Task Manager{% endblock %}
+
+{% block content %}
+  <h1>
+    Worker list
+    <a href="{% url 'project:worker-create' %}" class="btn btn-primary link-to-page mb-2">
+      Create
+    </a>
+  </h1>
+  <form method="get" action="">
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <input
+            type="text"
+            name="username"
+            value="{{ username }}"
+            placeholder="Search by username..."
+            style="border: 1px solid #ccc; border-radius: 8px; padding: 8px 12px; font-size: 14px; outline: none; width: 250px;"
+        >
+        <button class="btn btn-secondary mb-1" >
+            🔎
+        </button>
+    </div>
+</form>
+
+  {% if worker_list %}
+   <table class="table">
+    <tr>
+      <th>ID</th>
+      <th>Username</th>
+      <th>Position</th>
+      <th>Update worker</th>
+      <th>Delete worker</th>
+    </tr>
+    {% for worker in worker_list %}
+      <tr>
+        <td>
+          {{ worker.id }}
+        </td>
+        <td>
+          <a href="{% url 'project:worker-detail' pk=worker.id %}">
+            {{ worker.username }} {% if user == worker %} (Me) {% endif %}
+          </a>
+        </td>
+        <td>
+          {{ worker.position }}
+        </td>
+        <td>
+          <a class="btn btn-secondary link-to-page"
+              href="{% url 'project:worker-update' pk=worker.id %}">
+            Update
+          </a>
+        </td>
+        <td>
+          <a class="btn btn-primary link-to-page"
+             href="{% url 'project:worker-delete' pk=worker.id%}">
+            Delete
+          </a>
+        </td>
+      </tr>
+    {% endfor %}
+
+   </table>
+  {% else %}
+    <p>There are no workers in company</p>
+  {% endif %}
+  {% block pagination %}
+    {% include "includes/pagination.html" %}
+  {% endblock %}
+{% endblock %}

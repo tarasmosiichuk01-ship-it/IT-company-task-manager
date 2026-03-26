@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Home | IT Task Manager{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-4 position-relative">
+    <a href="{% url 'project:position-list' %}">
+      <div class="p-3 text-center">
+        <h1 class="text-gradient text-primary"><span id="state1" countTo="{{ num_positions }}">0</span></h1>
+        <h5 class="mt-3">Position{{ num_positions|pluralize }}</h5>
+        <p class="text-sm font-weight-normal">Page with positions in our company</p>
+      </div>
+    </a>
+    <hr class="vertical dark">
+  </div>
+
+  <div class="col-md-4 position-relative">
+    <a href="{% url 'project:task-list' %}">
+      <div class="p-3 text-center">
+        <h1 class="text-gradient text-primary"><span id="state2" countTo="{{ num_tasks }}">0</span></h1>
+        <h5 class="mt-3">Task{{ num_tasks|pluralize }}</h5>
+        <p class="text-sm font-weight-normal">Page with tasks in our company</p>
+      </div>
+    </a>
+    <hr class="vertical dark">
+  </div>
+
+  <div class="col-md-4">
+    <a href="{% url 'project:worker-list' %}">
+      <div class="p-3 text-center">
+        <h1 class="text-gradient text-primary"><span id="state3" countTo="{{ num_workers }}">0</span></h1>
+        <h5 class="mt-3">Worker{{ num_workers|pluralize }}</h5>
+        <p class="text-sm font-weight-normal">Page with workers in our company</p>
+      </div>
+    </a>
+  </div>
+
+  <div class="col-md-4">
+    <a href="{% url 'project:project-list' %}">
+      <div class="p-3 text-center">
+        <h1 class="text-gradient text-primary">{{ num_projects }}</h1>
+        <h5 class="mt-3">Project{{ num_projects|pluralize }}</h5>
+        <p class="text-sm font-weight-normal">Page with projects in our company</p>
+      </div>
+    </a>
+  </div>
+
+  <div class="col-md-4">
+    <a href="{% url 'project:team-list' %}">
+      <div class="p-3 text-center">
+        <h1 class="text-gradient text-primary">{{ num_teams }}</h1>
+        <h5 class="mt-3">Team{{ num_teams|pluralize }}</h5>
+        <p class="text-sm font-weight-normal">Page with teams in our company</p>
+      </div>
+    </a>
+  </div>
+</div>
+
+<p style="text-align: center" class="mt-3">
+  You have visited this page {{ num_visits }} time{{ num_visits|pluralize }}.
+</p>
+{% endblock %}

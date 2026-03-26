@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Worker detail | IT Task Manager{% endblock %}
+
+{% block content %}
+  <h1>
+    {{ worker.username }}
+    <a href="{% url 'project:worker-update' pk=worker.id %}" class="btn btn-secondary link-to-page">
+      Update
+    </a>
+    <a href="{% url 'project:worker-delete' pk=worker.id %}" class="btn btn-danger link-to-page">
+      Delete
+    </a>
+  </h1>
+
+  <p><strong>First name:</strong> {{ worker.first_name }}</p>
+  <p><strong>Last name:</strong> {{ worker.last_name }}</p>
+  <p><strong>Worker position:</strong> {{ worker.position.name }}</p>
+  <p><strong>Email:</strong> {{ worker.email }}</p>
+
+  <h2>Tasks</h2>
+  <hr>
+  {% if worker.tasks.all %}
+    <h4>✅ Completed</h4>
+    <ul>
+    {% for task in worker.tasks.all %}
+      {% if task.is_completed %}
+        <li>
+          <a href="{% url 'project:task-detail' pk=task.id %}">{{ task.name }}</a>
+          — {{ task.task_type }} | Priority: {{ task.priority }} |
+        </li>
+      {% endif %}
+    {% endfor %}
+    </ul>
+
+    <h4>❌ Not completed</h4>
+    <ul>
+      {% for task in worker.tasks.all %}
+        {% if not task.is_completed %}
+          <li>
+            <a href="{% url 'project:task-detail' pk=task.id %}">{{ task.name }}</a>
+            — {{ task.task_type }} | Priority: {{ task.priority }} |
+          </li>
+        {% endif %}
+    {% endfor %}
+    </ul>
+
+  {% else %}
+    <p>No tasks assigned to this worker.</p>
+  {% endif %}
+
+{% endblock %}

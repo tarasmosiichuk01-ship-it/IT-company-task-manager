@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Team delete | IT Task Manager{% endblock %}
+
+{% block content %}
+  <h1>Delete team?</h1>
+  <form action="" method="post">
+    {% csrf_token %}
+    <br>
+    <input type="submit" value="Yes" class="btn btn-danger">
+    <a href="{% url 'project:team-list' %}" class="btn btn-secondary">Cancel</a>
+  </form>
+{% endblock %}

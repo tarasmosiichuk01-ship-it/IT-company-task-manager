@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Position detail | IT Task Manager{% endblock %}
+
+{% block content %}
+  <h1>{{ position.name }}</h1>
+  <hr>
+  <h5>All workers with position {{ position.name }}:</h5>
+  {% for worker in position.workers.all %}
+    <li><a href="{% url 'project:worker-detail' pk=worker.id %}">{{ worker }}</a></li>
+  {% empty %}
+    There no workers with this position.
+  {% endfor %}
+{% endblock %}

@@ -354,5 +354,6 @@ pyrightconfig.json
 # Custom (project-specific)
 *.sqlite3
 *.db
+neondb
 
 # End of https://www.toptal.com/developers/gitignore/api/python,django,pycharm+all
